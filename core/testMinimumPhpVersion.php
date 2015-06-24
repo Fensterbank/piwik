@@ -111,6 +111,22 @@ if (!function_exists('Piwik_GetErrorMessagePage')) {
             }
         }
 
+        $message = str_replace(array("<br />", "<br>", "<br/>", "</p>"), "\n", $message);
+        $message = str_replace("\t", "", $message);
+        $message = strip_tags($message);
+
+        if ($isCli === null) {
+            $isCli = PHP_SAPI == 'cli';
+        }
+
+        if (!$isCli) {
+            if (version_compare('5.2.3', PHP_VERSION) > 0) {
+                $message = htmlentities($message, ENT_QUOTES, 'UTF-8', $doubleEncode = false);
+            } else {
+                $message = htmlentities($message);
+            }
+        }
+
         // We return only an HTML fragment for AJAX requests
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
             && (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
@@ -128,10 +144,6 @@ if (!function_exists('Piwik_GetErrorMessagePage')) {
 
         if ($optionalTrace) {
             $optionalTrace = '<h2>Stack trace</h2><pre>' . htmlentities($optionalTrace) . '</pre>';
-        }
-
-        if ($isCli === null) {
-            $isCli = PHP_SAPI == 'cli';
         }
 
         if ($optionalLinks) {
@@ -164,10 +176,6 @@ if (!function_exists('Piwik_GetErrorMessagePage')) {
             . ' ' . (Piwik_ShouldPrintBackTraceWithMessage() ? $optionalTrace : '')
             . ' ' . $optionalLinks;
 
-
-        $message = str_replace(array("<br />", "<br>", "<br/>", "</p>"), "\n", $message);
-        $message = str_replace("\t", "", $message);
-        $message = strip_tags($message);
 
         if (!$isCli) {
             $message = $headerPage . $content . $footerPage;
