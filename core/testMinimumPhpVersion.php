@@ -120,7 +120,7 @@ if (!function_exists('Piwik_GetErrorMessagePage')) {
         }
 
         if (!$isCli) {
-            if (version_compare('5.2.3', PHP_VERSION) > 0) {
+            if (version_compare('5.2.3', PHP_VERSION) < 0) {
                 $message = htmlentities($message, ENT_QUOTES, 'UTF-8', $doubleEncode = false);
             } else {
                 $message = htmlentities($message);
